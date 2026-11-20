@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Breaking workflow change (major-version consideration)
+
+- Require transparent AI authorship attribution for GitHub prose published through a human account, with reminders in the spec, implementation, and PR review skills. Existing adequate attribution footers remain valid.
+
 ## v1.0.0
 
 First release, extracted from the workflow used to build a hobby project with Claude Code and GitHub Copilot.
