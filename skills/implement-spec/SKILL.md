@@ -30,7 +30,7 @@ Steps 4 and 5 of the feature delivery workflow.
 
 ## Open the PR
 
-- Use the project's PR template. Put `Closes #<spec issue>` in the body and list every deviation from the spec (or "None").
+- Use the project's PR template. Put `Closes #<spec issue>` in the body and list every deviation from the spec (or "None"). Attribute AI-authored PR text published through a human account per the installed `.agent-workflows/principles.md` identity and attribution rule; don't duplicate an adequate existing footer.
 - Assign the maintainer. Request their review too, unless the PR is opened under their account (GitHub rejects review requests to the author).
 - Never merge it yourself. When review comments arrive, push new commits (don't force-push over reviewed history) and reply to each comment you won't apply, with the reason.
 
