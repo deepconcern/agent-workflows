@@ -15,7 +15,6 @@ Everything here is plain Markdown, so any agent can follow it: Claude Code, GitH
 | [`stacks/`](stacks/) | Optional conventions for specific stacks ([React](stacks/react.md), [Go + GraphQL](stacks/go-graphql.md)) and [cloud agent sessions](stacks/cloud-sessions.md) |
 | [`templates/`](templates/) | A project [`AGENTS.md`](templates/AGENTS.md), a [spec issue](templates/spec-issue.md) and a [PR body](templates/pull_request_template.md) |
 | [`install.sh`](install.sh) | Copies a tagged version into a project |
-| [`AGENTS.md`](AGENTS.md) | Rules for agents changing this repo |
 
 ### Skills
 
