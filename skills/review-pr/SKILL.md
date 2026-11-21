@@ -66,6 +66,6 @@ A request to review is permission to post the review. Once you have enough conte
 1. **Post it on the item itself**: a "Comment" review on a PR (inline comments where they help), or an issue comment on a spec.
 2. **Summarize it to the human** in the conversation where they asked: the verdict, the must-fix items, and a link to the posted review.
 
-If you can't post (no repository access, read-only access, no way to leave a PR "Comment" review, or a submission that fails), give the human the full review text in chat, verdict first, and say plainly that it has not been posted.
+If you can't post (no repository access, read-only access, no way to leave a PR "Comment" review, or a confirmed submission failure), give the human the full review text in chat, verdict first, and say plainly that it has not been posted. If a submission's outcome is uncertain (a timeout, for example), check the thread when you can before saying it wasn't posted; if you can't verify it, say that in chat.
 
 **Self-review is the exception.** When you review your own PR before asking for review, fix what you find and don't post a verdict comment.
