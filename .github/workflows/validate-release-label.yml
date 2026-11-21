@@ -1,0 +1,28 @@
+name: Validate release label
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+permissions: {}
+
+jobs:
+  classification:
+    name: Release classification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check release classification
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+
+          with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as stream:
+              pull = json.load(stream)["pull_request"]
+          recognized = {"release: major", "release: minor", "release: patch", "release: none"}
+          labels = {label["name"] for label in pull["labels"]} & recognized
+          if len(labels) != 1:
+              raise SystemExit("Select exactly one release label: " + ", ".join(sorted(recognized)))
+          print(next(iter(labels)))
+          PY
