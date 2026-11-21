@@ -1,4 +1,6 @@
+import re
 import unittest
+from pathlib import Path
 
 from release import Error, Pull, Tag, bump, classify, highest_stable, merge_labels, plan, publish
 
@@ -28,6 +30,35 @@ class GitHub:
         self.releases[entry.version] = entry.body
 
 
+class WorkflowTests(unittest.TestCase):
+    workflows = Path(__file__).resolve().parents[1] / "workflows"
+
+    def test_validation_triggers_on_pr_and_label_changes_without_permissions(self):
+        workflow = (self.workflows / "validate-release-label.yml").read_text()
+        self.assertRegex(
+            workflow,
+            r"(?m)^on:\n  pull_request:\n    branches: \[main\]\n"
+            r"    types: \[opened, reopened, synchronize, labeled, unlabeled\]\n\npermissions:",
+        )
+        self.assertEqual(re.findall(r"(?m)^ *permissions:.*$", workflow), ["permissions: {}"])
+
+    def test_only_publish_job_has_write_permission_and_only_runs_for_merges(self):
+        workflow = (self.workflows / "release.yml").read_text()
+        self.assertRegex(
+            workflow,
+            r"(?m)^on:\n  pull_request:\n    branches: \[main\]\n"
+            r"    types: \[closed\]\n\npermissions:",
+        )
+        self.assertRegex(workflow, r"(?m)^jobs:\n  publish:\n    if: github\.event\.pull_request\.merged == true$")
+        self.assertEqual(re.findall(r"(?m)^ *permissions:.*$", workflow), ["permissions: {}", "    permissions:"])
+        self.assertEqual(re.findall(r"(?m)^ *[\w-]+: write(?:-all)? *$", workflow), ["      contents: write"])
+        self.assertRegex(
+            workflow,
+            r"(?m)^  publish:\n(?:^    [^\n]*\n|^      [^\n]*\n)*?"
+            r"    permissions:\n      contents: write$",
+        )
+
+
 class ReleaseTests(unittest.TestCase):
     def test_validation_requires_exactly_one_release_label(self):
         self.assertEqual(classify(["bug", "release: minor"]), "minor")
@@ -42,6 +73,15 @@ class ReleaseTests(unittest.TestCase):
                 self.assertEqual(bump("v1.4.2", label), expected)
         with self.assertRaises(Error):
             highest_stable(["v01.1.0", "v2.0.0-rc.1"])
+
+    def test_relabel_before_merge_uses_replacement_label(self):
+        events = [
+            {"event": "labeled", "label": {"name": "release: minor"}, "created_at": "2026-01-01T00:00:01Z"},
+            {"event": "unlabeled", "label": {"name": "release: minor"}, "created_at": "2026-01-01T00:00:02Z"},
+            {"event": "labeled", "label": {"name": "release: patch"}, "created_at": "2026-01-01T00:00:03Z"},
+            {"event": "merged", "commit_id": "a", "created_at": "2026-01-01T00:00:04Z"},
+        ]
+        self.assertEqual(merge_labels(events, events[-1]["created_at"]), "patch")
 
     def test_post_merge_label_changes_do_not_change_none(self):
         events = [
